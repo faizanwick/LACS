@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LACS - Legal Attestation and Consultant Services</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#445493',
+                        primaryDark: '#394479',
+                        primaryLight: '#5465a3'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            scroll-behavior: smooth;
+        }
+        .service-card {
+            transition: all 0.3s ease;
+        }
+        .service-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        .faq-item {
+            transition: all 0.3s ease;
+        }
+        .gradient-bg {
+            background: linear-gradient(135deg, #394479 0%, #445493 100%);
+        }
+        .floating-button {
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        .whatsapp-button {
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% {
+                box-shadow: 0 0 0 0 rgba(68, 84, 147, 0.7);
+            }
+            70% {
+                box-shadow: 0 0 0 10px rgba(68, 84, 147, 0);
+            }
+            100% {
+                box-shadow: 0 0 0 0 rgba(68, 84, 147, 0);
+            }
+        }
+        .hero-section {
+            background-image: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><rect width="1920" height="1080" fill="%23394479"/><path d="M0 810 Q 480 540 960 810 T 1920 810 V 1080 H 0 Z" fill="%23445493"/></svg>');
+            background-size: cover;
+            background-position: center;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .multiselect-dropdown {
+            position: relative;
+        }
+        .dropdown-options {
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .select-service-btn {
+            transition: all 0.3s ease;
+        }
+        .select-service-btn:hover {
+            transform: scale(1.05);
+        }
+        .custom-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.7);
+            background: white;
+            padding: 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        .custom-popup.show {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+            visibility: visible;
+        }
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+            z-index: 999;
+        }
+        .popup-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+        .logo-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            line-height: 1.2;
+            letter-spacing: 0.5px;
+        }
+        .logo-subtitle {
+            font-size: 0.75rem;
+            opacity: 0.9;
+            letter-spacing: 0.5px;
+            font-weight: 400;
+        }
+        @media (max-width: 640px) {
+            .logo-container {
+                justify-content: center;
+                text-align: center;
+            }
+            .logo-text {
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-50">
+    <!-- Custom Success Popup -->
+    <div class="popup-overlay" id="popupOverlay"></div>
+    <div class="custom-popup" id="successPopup">
+        <div class="text-center">
+            <svg class="w-16 h-16 text-green-500 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-900 mb-2">Thank You!</h3>
+            <p class="text-gray-600 mb-6">Your inquiry has been processed. Redirecting you to WhatsApp to complete your request.</p>
+            <button onclick="closePopup()" class="bg-primary text-white px-6 py-2 rounded-full hover:bg-primaryDark transition">Close</button>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header class="gradient-bg text-white fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center">
+            <div class="logo-container mb-4 md:mb-0">
+                <div class="logo-text">
+                    <span class="logo-title">LACS</span>
+                    <span class="logo-subtitle">Legal Attestation & Consultant Services</span>
+                </div>
+            </div>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="#services" class="hover:text-blue-200 transition">Services</a></li>
+                    <li><a href="#faq" class="hover:text-blue-200 transition">FAQ</a></li>
+                    <li><a href="#contact" class="hover:text-blue-200 transition">Contact</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="container mx-auto px-4 text-center text-white">
+            <h2 class="text-4xl md:text-5xl font-bold mb-6">Document Attestation Made Simple</h2>
+            <p class="text-xl md:text-2xl mb-10 max-w-3xl mx-auto">Professional attestation services for all your international document requirements</p>
+            <a href="#services" class="bg-white text-primary font-semibold px-8 py-3 rounded-full hover:bg-gray-100 transition">Explore Our Services</a>
+        </div>
+    </section>
+
+    <!-- Services Section -->
+    <section id="services" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-2">Our Services</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">We offer comprehensive attestation services to meet all your international document requirements</p>
+            
+            <div id="services-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Service cards will be dynamically inserted here -->
+            </div>
+            
+            <div class="text-center mt-10">
+                <button id="show-more-btn" class="bg-primary text-white px-6 py-2 rounded-full hover:bg-primaryDark transition">Show More Services</button>
+            </div>
+            
+            <!-- Floating button for selected services -->
+            <div id="selected-services-btn" class="fixed bottom-6 right-6 hidden">
+                <button class="floating-button bg-primary text-white px-6 py-3 rounded-full shadow-lg flex items-center">
+                    <span id="selected-count" class="mr-2">0</span> Services Selected
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- WhatsApp Floating Button -->
+            <a href="https://wa.me/919063257392" target="_blank" class="whatsapp-button fixed bottom-6 left-6 bg-green-500 text-white p-3 rounded-full shadow-lg z-50 hover:bg-green-600 transition-colors">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                    <path d="M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z"/>
+                </svg>
+            </a>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-2">About Us</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Your Trusted Partner in Document Attestation Services</p>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
+                <div class="space-y-6">
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">Our Mission</h3>
+                        <p class="text-gray-600">To provide efficient, reliable, and hassle-free document attestation services while maintaining the highest standards of professionalism and customer satisfaction.</p>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-6 rounded-lg">
+                        <h3 class="text-xl font-semibold mb-3 text-primary">Why Choose Us?</h3>
+                        <ul class="space-y-3 text-gray-600">
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Expert Guidance Throughout the Process
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Fast & Reliable Service
+                            </li>
+                            <li class="flex items-center">
+                                <svg class="w-5 h-5 text-primary mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                </svg>
+                                Competitive Pricing
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 p-8 rounded-lg">
+                    <h3 class="text-xl font-semibold mb-6 text-primary">Our Experience</h3>
+                    <div class="grid grid-cols-2 gap-6">
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">1000+</div>
+                            <p class="text-gray-600">Happy Clients</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">5000+</div>
+                            <p class="text-gray-600">Documents Attested</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">50+</div>
+                            <p class="text-gray-600">Countries Served</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="text-4xl font-bold text-primary mb-2">24/7</div>
+                            <p class="text-gray-600">Support</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-2">Frequently Asked Questions</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Find answers to common questions about our attestation services</p>
+            
+            <div class="max-w-3xl mx-auto">
+                <div class="space-y-4">
+                    <div class="faq-item bg-white rounded-lg shadow-md overflow-hidden">
+                        <button class="faq-question w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                            <span>What is document attestation?</span>
+                            <svg class="faq-arrow w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer px-6 py-4 border-t border-gray-100 hidden">
+                            <p class="text-gray-600">Document attestation is the process of verifying the authenticity of documents by relevant authorities. It's required when using documents in foreign countries for purposes like employment, education, or immigration.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item bg-white rounded-lg shadow-md overflow-hidden">
+                        <button class="faq-question w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                            <span>How long does the attestation process take?</span>
+                            <svg class="faq-arrow w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer px-6 py-4 border-t border-gray-100 hidden">
+                            <p class="text-gray-600">The attestation timeline varies depending on the document type and destination country. Typically, it takes between 7-21 working days. We also offer express services for urgent requirements.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item bg-white rounded-lg shadow-md overflow-hidden">
+                        <button class="faq-question w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                            <span>What's the difference between attestation and apostille?</span>
+                            <svg class="faq-arrow w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer px-6 py-4 border-t border-gray-100 hidden">
+                            <p class="text-gray-600">Apostille is a specific form of attestation used for documents intended for use in countries that are part of the Hague Convention. Regular attestation is required for non-Hague Convention countries and involves verification by multiple authorities.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item bg-white rounded-lg shadow-md overflow-hidden">
+                        <button class="faq-question w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                            <span>Do I need to submit original documents?</span>
+                            <svg class="faq-arrow w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer px-6 py-4 border-t border-gray-100 hidden">
+                            <p class="text-gray-600">Yes, most attestation processes require original documents. However, some authorities may accept notarized copies. We'll guide you on the specific requirements for your documents and destination country.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item bg-white rounded-lg shadow-md overflow-hidden">
+                        <button class="faq-question w-full text-left px-6 py-4 font-medium flex justify-between items-center">
+                            <span>Which countries do you provide attestation services for?</span>
+                            <svg class="faq-arrow w-5 h-5 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div class="faq-answer px-6 py-4 border-t border-gray-100 hidden">
+                            <p class="text-gray-600">We provide attestation services for all major countries including UAE, Qatar, Kuwait, Saudi Arabia, Bahrain, Oman, USA, UK, Canada, Australia, and many European and Asian countries.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="text-center mt-10">
+                    <a href="#contact" class="bg-primary text-white px-8 py-3 rounded-full hover:bg-primaryDark transition">Contact Us for More Information</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact" class="py-16 bg-white">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-2">Contact Us</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Get in touch with our attestation experts for personalized assistance</p>
+            
+            <div class="max-w-3xl mx-auto bg-white rounded-lg shadow-lg p-8">
+                <form id="contact-form" class="space-y-6">
+                    <div>
+                        <label for="name" class="block text-gray-700 font-medium mb-2">Full Name *</label>
+                        <input type="text" id="name" name="name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div>
+                        <label for="phone" class="block text-gray-700 font-medium mb-2">Phone Number *</label>
+                        <input type="tel" id="phone" name="phone" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div>
+                        <label for="email" class="block text-gray-700 font-medium mb-2">Email (Optional)</label>
+                        <input type="email" id="email" name="email" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                    </div>
+                    
+                    <div>
+                        <label for="services-dropdown" class="block text-gray-700 font-medium mb-2">Services Required *</label>
+                        <div class="multiselect-dropdown relative">
+                            <button type="button" id="services-dropdown" class="w-full px-4 py-2 border border-gray-300 rounded-lg bg-white text-left flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-primary">
+                                <span id="selected-services-text">Select Services</span>
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                                </svg>
+                            </button>
+                            <div id="dropdown-options" class="dropdown-options absolute z-10 mt-1 w-full bg-white border border-gray-300 rounded-lg shadow-lg hidden">
+                                <div class="p-2">
+                                    <div class="mb-2">
+                                        <button type="button" id="select-all" class="text-sm text-primary hover:underline">Select All</button>
+                                        <button type="button" id="deselect-all" class="text-sm text-primary hover:underline ml-4">Deselect All</button>
+                                    </div>
+                                    <div id="services-options" class="space-y-2">
+                                        <!-- Service options will be dynamically inserted here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="country" class="block text-gray-700 font-medium mb-2">Destination Country *</label>
+                        <select id="country" name="country" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary">
+                            <option value="">Select Country</option>
+                            <option value="UAE">UAE</option>
+                            <option value="Qatar">Qatar</option>
+                            <option value="Kuwait">Kuwait</option>
+                            <option value="Saudi Arabia">Saudi Arabia</option>
+                            <option value="Bahrain">Bahrain</option>
+                            <option value="Oman">Oman</option>
+                            <option value="USA">USA</option>
+                            <option value="UK">UK</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label for="message" class="block text-gray-700 font-medium mb-2">Additional Information</label>
+                        <textarea id="message" name="message" rows="4" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary"></textarea>
+                    </div>
+                    
+                    <div class="text-center">
+                        <button type="submit" class="bg-primary text-white px-8 py-3 rounded-full hover:bg-primaryDark transition">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Google Maps Section -->
+    <section class="py-16 bg-gray-50">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-2">Our Location</h2>
+            <p class="text-gray-600 text-center mb-12 max-w-2xl mx-auto">Visit us at our office in Hyderabad</p>
+            
+            <div class="w-full h-96 rounded-lg overflow-hidden shadow-lg">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3807.2733857363266!2d78.46743797507657!3d17.39721808415699!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bcb97b2d4000001%3A0x1b1d555e07d5c0b5!2sHyderabad%20Nursing%20Home%20Ln%2C%20Hill%20Fort%2C%20Adarsh%20Nagar%2C%20Hyderabad%2C%20Telangana%20500063!5e0!3m2!1sen!2sin!4v1708444236044!5m2!1sen!2sin"
+                    width="100%"
+                    height="100%"
+                    style="border:0;"
+                    allowfullscreen=""
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="gradient-bg text-white py-10">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div>
+                    <h3 class="text-xl font-bold mb-4">LACS</h3>
+                    <p class="mb-4">Legal Attestation & Consultant Services</p>
+                    <p>Your trusted partner for all document attestation needs.</p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Quick Links</h3>
+                    <ul class="space-y-2">
+                        <li><a href="#services" class="hover:text-blue-200 transition">Services</a></li>
+                        <li><a href="#faq" class="hover:text-blue-200 transition">FAQ</a></li>
+                        <li><a href="#contact" class="hover:text-blue-200 transition">Contact</a></li>
+                    </ul>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-4">Contact Info</h3>
+                    <ul class="space-y-2">
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
+                            </svg>
+                            Hyderabad Nursing Home Ln, Hill Fort, Adarsh Nagar, Hyderabad, Telangana 500063
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"></path>
+                            </svg>
+                            +91 9063257392
+                        </li>
+                        <li class="flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                                <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                            </svg>
+                            attestationlegal@gmail.com
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="border-t border-opacity-30 border-blue-300 mt-8 pt-6 text-center">
+                <p>&copy; 2023 LACS - Legal Attestation and Consultant Services. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Service data
+        const services = [
+            {
+                id: 1,
+                title: "Educational Certificate Attestation",
+                description: "For degree, diploma, and school certificates required for jobs or education abroad.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
+            },
+            {
+                id: 2,
+                title: "Apostille Services",
+                description: "For documents used in Hague Convention countries – includes both educational and personal documents.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>`
+            },
+            {
+                id: 3,
+                title: "HRD Attestation",
+                description: "State-level verification for educational certificates, especially required before MEA or embassy attestation.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>`
+            },
+            {
+                id: 4,
+                title: "Police Clearance Certificate (PCC) Attestation",
+                description: "Needed for immigration, work visas, and long-term stays abroad.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" /></svg>`
+            },
+            {
+                id: 5,
+                title: "Birth Certificate Attestation",
+                description: "Commonly required for child visa, school admissions abroad, and immigration.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>`
+            },
+            {
+                id: 6,
+                title: "Marriage Certificate Attestation",
+                description: "Necessary for spouse visa or family visa processing.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" /></svg>`
+            },
+            {
+                id: 7,
+                title: "Degree Certificate Attestation",
+                description: "A specific and frequently requested service under educational attestation for job/employment visas.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" /></svg>`
+            },
+            {
+                id: 8,
+                title: "MEA (Ministry of External Affairs) Attestation",
+                description: "Central government attestation required after state-level attestation and before embassy attestation.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>`
+            },
+            {
+                id: 9,
+                title: "Embassy/Consulate Attestation",
+                description: "Final attestation step for many countries like UAE, Qatar, Kuwait, etc., after MEA attestation.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9" /></svg>`
+            },
+            {
+                id: 10,
+                title: "Commercial Document Attestation",
+                description: "For businesses needing document attestation for international trade, partnerships, or branch setup abroad.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>`
+            },
+            {
+                id: 11,
+                title: "Medical Certificate Attestation",
+                description: "For healthcare professionals seeking employment abroad or for medical treatment purposes.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>`
+            },
+            {
+                id: 12,
+                title: "Power of Attorney Attestation",
+                description: "For legal documents authorizing someone to act on your behalf in foreign countries.",
+                icon: `<svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 text-primary mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>`
+            }
+        ];
+
+        // Initialize variables
+        let selectedServices = [];
+        let showingAllServices = false;
+        let contactSelectedServices = [];
+
+        // DOM elements
+        const servicesContainer = document.getElementById('services-container');
+        const showMoreBtn = document.getElementById('show-more-btn');
+        const selectedServicesBtn = document.getElementById('selected-services-btn');
+        const selectedCountEl = document.getElementById('selected-count');
+        const servicesDropdown = document.getElementById('services-dropdown');
+        const dropdownOptions = document.getElementById('dropdown-options');
+        const servicesOptions = document.getElementById('services-options');
+        const selectedServicesText = document.getElementById('selected-services-text');
+        const selectAllBtn = document.getElementById('select-all');
+        const deselectAllBtn = document.getElementById('deselect-all');
+
+        // Render services
+        function renderServices() {
+            servicesContainer.innerHTML = '';
+            
+            const servicesToShow = showingAllServices ? services : services.slice(0, 6);
+            
+            servicesToShow.forEach(service => {
+                const isSelected = selectedServices.includes(service.id);
+                
+                const serviceCard = document.createElement('div');
+                serviceCard.className = `service-card bg-white rounded-lg shadow-md p-6 flex flex-col items-center text-center ${isSelected ? 'ring-2 ring-primary' : ''}`;
+                
+                serviceCard.innerHTML = `
+                    ${service.icon}
+                    <h3 class="text-xl font-semibold mb-2">${service.title}</h3>
+                    <p class="text-gray-600 mb-4">${service.description}</p>
+                    <button class="select-service-btn mt-auto px-4 py-2 rounded-full ${isSelected ? 'bg-primary text-white' : 'bg-gray-100 text-gray-800 hover:bg-gray-200'} transition">
+                        ${isSelected ? 'Selected' : 'Select'}
+                    </button>
+                `;
+                
+                const selectBtn = serviceCard.querySelector('.select-service-btn');
+                selectBtn.addEventListener('click', () => toggleServiceSelection(service.id));
+                
+                servicesContainer.appendChild(serviceCard);
+            });
+            
+            showMoreBtn.textContent = showingAllServices ? 'Show Less' : 'Show More Services';
+        }
+
+        // Toggle service selection
+        function toggleServiceSelection(serviceId) {
+            const index = selectedServices.indexOf(serviceId);
+            
+            if (index === -1) {
+                selectedServices.push(serviceId);
+            } else {
+                selectedServices.splice(index, 1);
+            }
+            
+            renderServices();
+            updateSelectedServicesButton();
+        }
+
+        // Update selected services button
+        function updateSelectedServicesButton() {
+            if (selectedServices.length > 0) {
+                selectedServicesBtn.classList.remove('hidden');
+                selectedCountEl.textContent = selectedServices.length;
+            } else {
+                selectedServicesBtn.classList.add('hidden');
+            }
+        }
+
+        // Populate services dropdown
+        function populateServicesDropdown() {
+            servicesOptions.innerHTML = '';
+            
+            services.forEach(service => {
+                const serviceOption = document.createElement('div');
+                serviceOption.className = 'flex items-center';
+                serviceOption.innerHTML = `
+                    <input type="checkbox" id="service-${service.id}" name="services[]" value="${service.id}" class="mr-2 service-checkbox">
+                    <label for="service-${service.id}" class="text-sm">${service.title}</label>
+                `;
+                servicesOptions.appendChild(serviceOption);
+                
+                const checkbox = serviceOption.querySelector(`#service-${service.id}`);
+                checkbox.addEventListener('change', updateSelectedServicesText);
+            });
+        }
+
+        // Update selected services text
+        function updateSelectedServicesText() {
+            const checkboxes = document.querySelectorAll('.service-checkbox:checked');
+            contactSelectedServices = Array.from(checkboxes).map(cb => parseInt(cb.value));
+            
+            if (checkboxes.length === 0) {
+                selectedServicesText.textContent = 'Select Services';
+            } else if (checkboxes.length === 1) {
+                const serviceId = parseInt(checkboxes[0].value);
+                const service = services.find(s => s.id === serviceId);
+                selectedServicesText.textContent = service.title;
+            } else {
+                selectedServicesText.textContent = `${checkboxes.length} services selected`;
+            }
+        }
+
+        // Initialize FAQ functionality
+        function initFAQ() {
+            const faqQuestions = document.querySelectorAll('.faq-question');
+            
+            faqQuestions.forEach(question => {
+                question.addEventListener('click', () => {
+                    const answer = question.nextElementSibling;
+                    const arrow = question.querySelector('.faq-arrow');
+                    
+                    answer.classList.toggle('hidden');
+                    arrow.classList.toggle('rotate-180');
+                });
+            });
+        }
+
+        // Event listeners
+        showMoreBtn.addEventListener('click', () => {
+            showingAllServices = !showingAllServices;
+            renderServices();
+        });
+
+        selectedServicesBtn.addEventListener('click', () => {
+            document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+            
+            // Check the corresponding checkboxes in the contact form
+            selectedServices.forEach(serviceId => {
+                const checkbox = document.getElementById(`service-${serviceId}`);
+                if (checkbox) {
+                    checkbox.checked = true;
+                    contactSelectedServices.push(serviceId);
+                }
+            });
+            
+            updateSelectedServicesText();
+        });
+
+        servicesDropdown.addEventListener('click', () => {
+            dropdownOptions.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!servicesDropdown.contains(e.target) && !dropdownOptions.contains(e.target)) {
+                dropdownOptions.classList.add('hidden');
+            }
+        });
+
+        selectAllBtn.addEventListener('click', () => {
+            const checkboxes = document.querySelectorAll('.service-checkbox');
+            checkboxes.forEach(cb => cb.checked = true);
+            updateSelectedServicesText();
+        });
+
+        deselectAllBtn.addEventListener('click', () => {
+            const checkboxes = document.querySelectorAll('.service-checkbox');
+            checkboxes.forEach(cb => cb.checked = false);
+            updateSelectedServicesText();
+        });
+
+        document.getElementById('contact-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Form validation
+            const name = document.getElementById('name').value;
+            const phone = document.getElementById('phone').value;
+            const country = document.getElementById('country').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+            
+            if (!name || !phone || !country) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // Check if at least one service is selected
+            if (contactSelectedServices.length === 0) {
+                alert('Please select at least one service.');
+                return;
+            }
+
+            // Get selected services names
+            const selectedServiceNames = contactSelectedServices.map(id => 
+                services.find(s => s.id === id)?.title
+            ).join(', ');
+            
+            // Format the WhatsApp message
+            const whatsappMessage = `*New Inquiry from LACS Website*%0A%0A` +
+                `*Name:* ${encodeURIComponent(name)}%0A` +
+                `*Phone:* ${encodeURIComponent(phone)}%0A` +
+                `*Email:* ${encodeURIComponent(email || 'Not provided')}%0A` +
+                `*Country:* ${encodeURIComponent(country)}%0A` +
+                `*Services Required:* ${encodeURIComponent(selectedServiceNames)}%0A` +
+                `*Additional Information:* ${encodeURIComponent(message || 'None')}`;
+            
+            // Create WhatsApp link
+            const whatsappLink = `https://wa.me/919063257392?text=${whatsappMessage}`;
+            
+            // Show success popup
+            showPopup();
+            
+            // Open WhatsApp in a new tab
+            window.open(whatsappLink, '_blank');
+            
+            // Reset form
+            this.reset();
+            contactSelectedServices = [];
+            updateSelectedServicesText();
+        });
+
+        // Add padding to main content to account for fixed header
+        function adjustPadding() {
+            const headerHeight = document.querySelector('header').offsetHeight;
+            document.body.style.paddingTop = `${headerHeight}px`;
+        }
+
+        // Initialize
+        window.addEventListener('load', () => {
+            renderServices();
+            populateServicesDropdown();
+            initFAQ();
+            adjustPadding();
+        });
+
+        window.addEventListener('resize', adjustPadding);
+
+        // Smooth scroll for "Explore Services" button
+        document.querySelector('.hero-section a[href="#services"]').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('#services').scrollIntoView({
+                behavior: 'smooth'
+            });
+        });
+
+        // Custom popup functions
+        function showPopup() {
+            document.getElementById('popupOverlay').classList.add('show');
+            document.getElementById('successPopup').classList.add('show');
+        }
+
+        function closePopup() {
+            document.getElementById('popupOverlay').classList.remove('show');
+            document.getElementById('successPopup').classList.remove('show');
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'945ee6196080d689',t:'MTc0ODI3OTU2MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
